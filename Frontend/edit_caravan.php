@@ -30,7 +30,7 @@ $caravan = mysqli_fetch_assoc($result);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Caravan - RentMyCaravan</title>
-    <link rel="stylesheet" href="edit_caravan.css">
+    <link rel="stylesheet" href="css/edit_caravan.css">
 </head>
 <body>
 <div class="container">
@@ -81,7 +81,7 @@ $caravan = mysqli_fetch_assoc($result);
             <input type="text" name="video_url" value="<?php echo $caravan['video_url']; ?>">
 
             <label>Image Url:</label>
-            <input type="text" name="image_url" value="<?php echo $caravan['image_url']; ?>">
+            <input type="file" name="image_url" value="<?php echo $caravan['image_url']; ?>">
 
             <button type="submit">Save</button>
             <button type="button" onclick="window.location.href='my_caravans.php'">Cancel</button>

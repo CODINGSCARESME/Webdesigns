@@ -43,7 +43,7 @@ $caravan = mysqli_fetch_assoc($result);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Caravans - RentMyCaravan</title>
-    <link rel="stylesheet" href="delete_caravan.css">
+    <link rel="stylesheet" href="css/delete_caravan.css">
 </head>
 <body>
 <div class="container">
@@ -71,11 +71,15 @@ $caravan = mysqli_fetch_assoc($result);
 
             <p>Are you sure you want to delete this caravan?</p>
 
-            <form method="post" onsubmit="return confirmDelete();">
+            <form method="post" onsubmit="return confirmDelete();" class="delete-form">
                 <input type="hidden" name="id" value="<?php echo $caravan['vehicle_id']; ?>">
-                <button type="submit" name="confirm_delete" class="delete-button">Delete</button>
-                <button type="button" onclick="window.location.href='my_caravans.php'" class="cancel-button">Cancel</button>
+
+                <div class="button-group">
+                    <button type="submit" name="confirm_delete" class="delete-button">Delete</button>
+                    <button type="button" onclick="window.location.href='my_caravans.php'" class="cancel-button">Cancel</button>
+                </div>
             </form>
+            
     </main>
 
     <script>

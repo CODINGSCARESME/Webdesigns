@@ -2,7 +2,10 @@
 session_start();
 $_SESSION['user_id'] = 1; // TEMP login simulation
 
-include 'db_connect.php';
+$conn = new mysqli("localhost", "root", "", "rentmycar");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
