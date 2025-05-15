@@ -1,61 +1,66 @@
 <?php
-// Step 1: Connect to MySQL database
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
 $host = 'localhost';
-$db = 'rentmycar';  // Make sure this matches the name you used in phpMyAdmin
+$db = 'rentmycar';  
 $user = 'root';
-$pass = ''; // Leave empty unless you set a MySQL password
+$pass = ''; 
 
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Step 2: Clean input function (prevents XSS)
 function clean_input($data) {
     return htmlspecialchars(stripslashes(trim($data)));
 }
 
-// Step 3: Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Collect and clean inputs
-    $username = clean_input($_POST['username']);
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Secure password storage
-    $title = clean_input($_POST['title']);
-    $fullname = clean_input($_POST['fullname']);
-    $gender = clean_input($_POST['gender']);
-    $address = clean_input($_POST['address']);
+    $username  = clean_input($_POST['username']);
+    $password  = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $title     = clean_input($_POST['title']);
+    $fullname  = clean_input($_POST['fullname']);
+    $gender    = clean_input($_POST['gender']);
+    $address1 = clean_input($_POST['address']); 
     $telephone = clean_input($_POST['telephone']);
-    $email = clean_input($_POST['email']);
+    $email     = clean_input($_POST['email']);
+    $image_url = null;
 
-    // Step 4: Handle profile picture upload
-    $targetDir = "uploads/";
-    $profileName = basename($_FILES["profile"]["name"]);
-    $targetFile = $targetDir . uniqid() . "_" . $profileName;
-    $uploadOk = 1;
+    $profileName = $_FILES["profile"]["name"] ?? null;
 
-    // Validate it's an image
-    $check = getimagesize($_FILES["profile"]["tmp_name"]);
-    if ($check === false) {
-        echo "<script>alert('File is not an image.');</script>";
-        $uploadOk = 0;
-    }
+    if ($profileName && $_FILES["profile"]["error"] === 0) {
+        $targetDir = "uploads/";
+        $uniqueName = uniqid() . "_" . basename($profileName);
+        $targetFile = $targetDir . $uniqueName;
 
-    // Upload image and insert user if no issues
-    if ($uploadOk && move_uploaded_file($_FILES["profile"]["tmp_name"], $targetFile)) {
-        // Insert into DB
-        $stmt = $conn->prepare("INSERT INTO users (username, password, title, fullname, gender, address, telephone, email, profile_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssss", $username, $password, $title, $fullname, $gender, $address, $telephone, $email, $targetFile);
-
-        if ($stmt->execute()) {
-            echo "<script>alert('Registration successful!'); window.location.href = 'login.php';</script>";
-        } else {
-            echo "<script>alert('Error: " . $stmt->error . "');</script>";
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
         }
-        $stmt->close();
-    } else {
-        echo "<script>alert('Failed to upload image.');</script>";
+
+        if (getimagesize($_FILES["profile"]["tmp_name"])) {
+            if (move_uploaded_file($_FILES["profile"]["tmp_name"], $targetFile)) {
+                $image_url = $targetFile;
+            } else {
+                echo "<script>alert('Image move failed.');</script>";
+            }
+        } else {
+            echo "<script>alert('Invalid image file.');</script>";
+        }
     }
 
+    $stmt = $conn->prepare("INSERT INTO users (username, password, title, fullname, gender, adress1, telephone, email, profile_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssss", $username, $password, $title, $fullname, $gender, $address1, $telephone, $email, $image_url);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Registration successful!'); window.location.href = 'login.php';</script>";
+    } else {
+        echo "<script>alert('Error: " . $stmt->error . "');</script>";
+    }
+
+    $stmt->close();
     $conn->close();
 }
 ?>
@@ -128,11 +133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 <div class="form-group">
             <label for="profile">Profile Picture*</label>
-            <input type="file" id="profile" name="profile" required>
+            <input type="file" id="profile" name="profile">
 </div>
         
+<button type="submit" class="register-btn">Register</button>
 
-    <button type="submit" class="register-btn">Register</button>
 </div>
 </form>
 </div>
