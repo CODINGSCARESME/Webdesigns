@@ -1,17 +1,25 @@
 <?php
 session_start();
 
-// TEMP: simulate login until login system is ready
-$_SESSION['user_id'] = 1;
+// Temporary login simulation
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['user_id'] = 1;
+}
 
-include 'db_connect.php'; // your DB connection file
+$conn = new mysqli("localhost", "root", "", "rentmycar");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 $user_id = $_SESSION['user_id'];
 
 $query = "SELECT * FROM vehicle_details WHERE user_id = $user_id";
 $result = mysqli_query($conn, $query);
-?>
 
+if (!$result) {
+    die("Query failed: " . mysqli_error($conn));
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,11 +27,14 @@ $result = mysqli_query($conn, $query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Caravans - RentMyCaravan</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="my_caravans.css">
 </head>
 <body>
+<div class="container">
     <header>
+        <div class="logo-box">150 × 100</div>
         <h1>RentMyCaravan</h1>
+        <div class="logo-box">150 × 100</div>
     </header>
 
     <nav>

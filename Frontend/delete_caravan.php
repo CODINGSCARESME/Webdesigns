@@ -2,7 +2,10 @@
 session_start();
 $_SESSION['user_id'] = 1; // TEMP for testing
 
-include 'db_connect.php';
+$conn = new mysqli("localhost", "root", "", "rentmycar");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 if (!isset($_GET['id']) && !isset($_POST['id'])) {
     die("No caravan ID provided.");
@@ -40,11 +43,14 @@ $caravan = mysqli_fetch_assoc($result);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Caravans - RentMyCaravan</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="delete_caravan.css">
 </head>
 <body>
+<div class="container">
     <header>
+        <div class="logo-box">150 × 100</div>
         <h1>RentMyCaravan</h1>
+        <div class="logo-box">150 × 100</div>
     </header>
 
     <nav>

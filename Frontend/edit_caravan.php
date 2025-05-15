@@ -1,21 +1,23 @@
 <?php
 session_start();
-$_SESSION['user_id'] = 1; // Simulated login
-include 'db_connect.php';
 
-if (!isset($_GET['id'])) {
-    die("No caravan ID provided.");
+// Temporary login simulation
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['user_id'] = 1;
 }
 
-$vehicle_id = (int)$_GET['id'];
+$conn = new mysqli("localhost", "root", "", "rentmycar");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 $user_id = $_SESSION['user_id'];
 
-// Fetch caravan for this user
-$query = "SELECT * FROM vehicle_details WHERE vehicle_id = $vehicle_id AND user_id = $user_id";
+$query = "SELECT * FROM vehicle_details WHERE user_id = $user_id";
 $result = mysqli_query($conn, $query);
 
-if (!$result || mysqli_num_rows($result) === 0) {
-    die("Caravan not found or does not belong to this user.");
+if (!$result) {
+    die("Query failed: " . mysqli_error($conn));
 }
 
 $caravan = mysqli_fetch_assoc($result);
@@ -28,10 +30,16 @@ $caravan = mysqli_fetch_assoc($result);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Caravan - RentMyCaravan</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="edit_caravan.css">
 </head>
 <body>
-    <h1>RentMyCaravan</h1>
+<div class="container">
+    <header>
+        <div class="logo-box">150 × 100</div>
+        <h1>RentMyCaravan</h1>
+        <div class="logo-box">150 × 100</div>
+    </header>
+    
 <nav>
     <a href="index.php">Home</a>
     <a href="add_caravan.php">Add Caravan</a>
