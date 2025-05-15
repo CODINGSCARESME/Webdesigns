@@ -27,31 +27,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $doors = clean_input($_POST['num_doors']);
     $video = clean_input($_POST['video_url']);
 
+    $image_url = null;
+
+if (isset($_FILES["image_url"]) && $_FILES["image_url"]["error"] === 0) {
     $upload_dir = __DIR__ . "/uploads/";
-$img_name = uniqid() . "_" . basename($_FILES["image_url"]["name"]);
-$img_path = $upload_dir . $img_name;
-$relative_path = "uploads/" . $img_name;
+    $img_name = uniqid() . "_" . basename($_FILES["image_url"]["name"]);
+    $img_path = $upload_dir . $img_name;
+    $relative_path = "uploads/" . $img_name;
 
-if (!is_dir($upload_dir)) {
-    mkdir($upload_dir, 0755, true);
-}
-
-if (move_uploaded_file($_FILES["image_url"]["tmp_name"], $img_path)) {
-    $stmt = $conn->prepare("INSERT INTO vehicle_details (user_id, vehicle_make, vehicle_model, vehicle_bodytype, fuel_type, mileage, location, year, num_doors, video_url, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("issssssssss", $user_id, $make, $model, $bodytype, $fuel, $mileage, $location, $year, $doors, $video, $relative_path);
-
-    if ($stmt->execute()) {
-        echo "<script>alert('Caravan added successfully!'); window.location.href = 'welcome.php';</script>";
-    } else {
-        echo "<script>alert('Database error: " . $stmt->error . "');</script>";
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
     }
-    $stmt->close();
-} else {
-    echo "<script>alert('Image move failed: check folder location and permissions.');</script>";
+
+    if (move_uploaded_file($_FILES["image_url"]["tmp_name"], $img_path)) {
+        $image_url = $relative_path;
+    }
 }
 
-    $conn->close();
+$stmt = $conn->prepare("INSERT INTO vehicle_details (user_id, vehicle_make, vehicle_model, vehicle_bodytype, fuel_type, mileage, location, year, num_doors, video_url, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("issssssssss", $user_id, $make, $model, $bodytype, $fuel, $mileage, $location, $year, $doors, $video, $image_url);
+
+if ($stmt->execute()) {
+    echo "<script>alert('Caravan added successfully!'); window.location.href = 'welcome.php';</script>";
+} else {
+    echo "<script>alert('Database error: " . $stmt->error . "');</script>";
 }
+$stmt->close();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -104,7 +107,7 @@ if (move_uploaded_file($_FILES["image_url"]["tmp_name"], $img_path)) {
             <input type="number" name="num_doors" placeholder="e.g. 2" required>
 
             <label>Image Upload*</label>
-            <input type="file" name="image_url" required>
+            <input type="file" name="image_url">
 
             <label>Video URL</label>
             <input type="url" name="video_url" placeholder="optional YouTube link">
