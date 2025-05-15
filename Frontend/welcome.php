@@ -49,14 +49,13 @@ $stmt->close();
         <div class="logo-box">150 × 100</div>
     </header>
 
-    <nav>
-        <a href="add_caravan.php">Add Caravan</a>
-        <a href="view_caravans.php">View My Caravan</a>
-        <a href="edit_caravan.php">Edit Caravan</a>
-        <a href="upload.php">Upload</a>
-        <a href="delete_caravan.php">Delete Caravan</a>
-        <a href="logout.php">Logout</a>
-    </nav>
+  <nav>
+  <a href="index.php">Home</a>
+  <a href="add_caravan.php">Add Caravan</a>
+  <a href="my_caravan.php">My Caravans</a>
+  <a href="about.php">About us</a>
+  <a href="logout.php">Logout</a>
+  </nav>
 
     <div class="welcome-box">
         <p>📢 <strong>Welcome, <?php echo htmlspecialchars($username); ?>!</strong>
