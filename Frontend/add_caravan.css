@@ -1,3 +1,4 @@
+/* Reset & Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -16,14 +17,13 @@ body {
 /* Main Container */
 .container {
   width: 960px;
-  height: 600px;
+  height: auto;
   background-color: #e0e0e0;
   position: relative;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
-/* Top Banner */
 header {
   display: flex;
   justify-content: space-between;
@@ -79,48 +79,48 @@ nav a:hover {
   background-color: #ddd;
 }
 
-/* Registration Box */
-.register-form {
+/* Form Styling */
+.form-section {
   background-color: #d3d3d3;
   border: 2px solid #999;
   padding: 20px;
-  height: 370px;
+  height: 400px;
   overflow-y: auto;
 }
 
-.register-form h2,
-.intruction {
-  margin-bottom: 10px;
-}
-
-.form-group {
-  margin-bottom: 10px;
+.form-section h2 {
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 label {
   display: block;
   font-weight: bold;
-  margin-bottom: 4px;
+  margin-top: 10px;
 }
 
 input[type="text"],
-input[type="password"],
-input[type="email"],
+input[type="number"],
+input[type="url"],
 input[type="file"],
 select {
   width: 100%;
   padding: 6px;
+  margin-top: 4px;
   border: 1px solid #999;
   background-color: #fff;
 }
 
-/* Register Button */
+/* Submit Button */
 .register-btn {
-  margin-top: 12px;
-  padding: 8px 20px;
+  margin-top: 20px;
+  padding: 10px 24px;
   background-color: #0b4f6c;
   color: #fff;
   border: none;
   cursor: pointer;
   font-weight: bold;
+  float: right;
 }
