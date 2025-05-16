@@ -7,8 +7,6 @@ body {
     flex-direction: column;
     align-items: center;
 }
-
-
 header {
     width: 100%;
     background-color: #3d719e;
@@ -20,7 +18,6 @@ header {
     border-bottom: 2px solid #000;
     margin-bottom: 10px;
 }
-
 .header-center h1 {
     margin: 0;
 }
