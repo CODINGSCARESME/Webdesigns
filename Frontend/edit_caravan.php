@@ -1,156 +1,129 @@
 <?php
 session_start();
 
-// Simulate user login (for testing only)
+// Temporary login simulation - set user_id in session if not already set
 if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // Replace with real login logic in production
+    $_SESSION['user_id'] = 1;
 }
 
+// Connect to the database
 $conn = new mysqli("localhost", "root", "", "rentmycar");
-
-// Check DB connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $user_id = $_SESSION['user_id'];
-$vehicle_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$caravan = null;
-$message = "";
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $vehicle_id = (int)$_POST['vehicle_id'];
-    $vehicle_make = $_POST['vehicle_make'];
-    $vehicle_model = $_POST['vehicle_model'];
-    $body_type = $_POST['body_type'];
-    $fuel_type = $_POST['fuel_type'];
-    $mileage = $_POST['mileage'];
-    $location = $_POST['location'];
-    $year = $_POST['year'];
-    $num_doors = $_POST['num_doors'];
-    $video_url = $_POST['video_url'];
+// Fetch caravan details for the logged-in user
+$query = "SELECT * FROM vehicle_details WHERE user_id = $user_id";
+$result = mysqli_query($conn, $query);
 
-    // NOTE: File upload handling (basic)
-    $image_url = "";
-    if (isset($_FILES['image_url']) && $_FILES['image_url']['error'] === 0) {
-        $upload_dir = 'uploads/';
-        $image_url = $upload_dir . basename($_FILES['image_url']['name']);
-        move_uploaded_file($_FILES['image_url']['tmp_name'], $image_url);
-    }
-
-    // Build update query
-    $sql = "UPDATE vehicle_details 
-            SET vehicle_make=?, vehicle_model=?, vehicle_bodytype=?, fuel_type=?, mileage=?, location=?, year=?, num_doors=?, video_url=?";
-    
-    if ($image_url !== "") {
-        $sql .= ", image_url=?";
-    }
-
-    $sql .= " WHERE vehicle_id=? AND user_id=?";
-
-    $stmt = $conn->prepare($sql);
-
-    if ($image_url !== "") {
-        $stmt->bind_param("ssssssssssii", $vehicle_make, $vehicle_model, $body_type, $fuel_type, $mileage, $location, $year, $num_doors, $video_url, $image_url, $vehicle_id, $user_id);
-    } else {
-        $stmt->bind_param("ssssssssssi", $vehicle_make, $vehicle_model, $body_type, $fuel_type, $mileage, $location, $year, $num_doors, $video_url, $vehicle_id, $user_id);
-    }
-
-    if ($stmt->execute()) {
-        $message = "Caravan updated successfully!";
-    } else {
-        $message = "Error updating caravan: " . $stmt->error;
-    }
+// If query fails, stop and show error
+if (!$result) {
+    die("Query failed: " . mysqli_error($conn));
 }
 
-// Fetch caravan data for display
-if ($vehicle_id > 0) {
-    $query = "SELECT * FROM vehicle_details WHERE vehicle_id = $vehicle_id AND user_id = $user_id";
-    $result = mysqli_query($conn, $query);
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        $caravan = mysqli_fetch_assoc($result);
-    } else {
-        die("Caravan not found or does not belong to this user.");
-    }
-} else {
-    die("No caravan ID provided.");
-}
+// Get the first caravan from the result set
+$caravan = mysqli_fetch_assoc($result);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Edit Caravan - RentMyCaravan</title>
-    <link rel="stylesheet" href="css/edit_caravan.css">
+    <link rel="stylesheet" href="css/edit_caravan.css" /> <!-- Link to CSS styles -->
 </head>
 <body>
 <div class="container">
     <header>
-        <div class="logo-box">150 × 100</div>
+        <div class="logo-box">150 × 100</div> <!-- Placeholder for logo -->
         <h1>RentMyCaravan</h1>
-        <div class="logo-box">150 × 100</div>
+        <div class="logo-box">150 × 100</div> <!-- Placeholder for logo -->
     </header>
 
     <nav>
+        <!-- Navigation menu -->
         <a href="welcome.php">Home</a>
         <a href="add_caravan.php">Add Caravan</a>
-        <a href="my_caravan.php" class="active">My Caravans</a>
+        <a href="my_caravan.php" class="active">My Caravans</a> <!-- Current page -->
         <a href="about.php">About us</a>
         <a href="logout.php">Logout</a>
     </nav>
 
     <main>
         <h2>Edit Caravan</h2>
-        <?php if ($message): ?>
-            <p style="color: green;"><strong><?php echo $message; ?></strong></p>
-        <?php endif; ?>
 
-        <form method="POST" enctype="multipart/form-data">
+        <!-- Edit form submits to update_caravan.php using POST method -->
+        <form action="update_caravan.php" method="POST" enctype="multipart/form-data">
+            <!-- Hidden input to pass the vehicle ID -->
             <input type="hidden" name="vehicle_id" value="<?php echo $caravan['vehicle_id']; ?>">
 
+            <!-- Vehicle Make input field -->
             <label>Vehicle Make:</label>
-            <input type="text" name="vehicle_make" value="<?php echo $caravan['vehicle_make']; ?>" required>
+            <input type="text" name="vehicle_make" value="<?php echo htmlspecialchars($caravan['vehicle_make']); ?>">
 
+            <!-- Vehicle Model input field -->
             <label>Vehicle Model:</label>
-            <input type="text" name="vehicle_model" value="<?php echo $caravan['vehicle_model']; ?>" required>
+            <input type="text" name="vehicle_model" value="<?php echo htmlspecialchars($caravan['vehicle_model']); ?>">
 
+            <!-- Body Type input field -->
             <label>Body Type:</label>
-            <input type="text" name="body_type" value="<?php echo $caravan['vehicle_bodytype']; ?>">
+            <input type="text" name="body_type" value="<?php echo htmlspecialchars($caravan['vehicle_bodytype']); ?>">
 
+            <!-- Fuel Type input field -->
             <label>Fuel Type:</label>
-            <input type="text" name="fuel_type" value="<?php echo $caravan['fuel_type']; ?>">
+            <input type="text" name="fuel_type" value="<?php echo htmlspecialchars($caravan['fuel_type']); ?>">
 
+            <!-- Mileage input field -->
             <label>Mileage:</label>
-            <input type="text" name="mileage" value="<?php echo $caravan['mileage']; ?>">
+            <input type="text" name="mileage" value="<?php echo htmlspecialchars($caravan['mileage']); ?>">
 
+            <!-- Location input field -->
             <label>Location:</label>
-            <input type="text" name="location" value="<?php echo $caravan['location']; ?>">
+            <input type="text" name="location" value="<?php echo htmlspecialchars($caravan['location']); ?>">
 
+            <!-- Year input field -->
             <label>Year:</label>
-            <input type="text" name="year" value="<?php echo $caravan['year']; ?>">
+            <input type="text" name="year" value="<?php echo htmlspecialchars($caravan['year']); ?>">
 
+            <!-- Number of Doors input field -->
             <label>Number of Doors:</label>
-            <input type="text" name="num_doors" value="<?php echo $caravan['num_doors']; ?>">
+            <input type="text" name="num_doors" value="<?php echo htmlspecialchars($caravan['num_doors']); ?>">
 
-            <label>Video URL:</label>
-            <input type="text" name="video_url" value="<?php echo $caravan['video_url']; ?>">
+            <!-- Video URL input field -->
+            <label>Video Url:</label>
+            <input type="text" name="video_url" value="<?php echo htmlspecialchars($caravan['video_url']); ?>">
 
-            <label>Current Image:</label><br>
-            <?php if (!empty($caravan['image_url'])): ?>
-                <img src="<?php echo $caravan['image_url']; ?>" alt="Caravan Image" width="200"><br>
-            <?php endif; ?>
-
-            <label>Upload New Image:</label>
+            <!-- Image URL input field for uploading a new file -->
+            <label>Image Url:</label>
             <input type="file" name="image_url">
 
-            <br><br>
+            <!-- Save button to submit the form -->
             <button type="submit">Save</button>
+
+            <!-- Cancel button redirects back to My Caravans page -->
             <button type="button" onclick="window.location.href='my_caravans.php'">Cancel</button>
         </form>
     </main>
 </div>
+
+<script>
+    // Highlight the active navigation link based on current page
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentPage = window.location.pathname.split("/").pop();
+        const links = document.querySelectorAll("nav a");
+
+        links.forEach(link => {
+            if (link.getAttribute("href") === currentPage) {
+                link.classList.add("active");
+            } else {
+                link.classList.remove("active");
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
