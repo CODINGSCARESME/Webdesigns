@@ -104,7 +104,7 @@ $caravan = mysqli_fetch_assoc($result);
             <button type="submit">Save</button>
 
             <!-- Cancel button redirects back to My Caravans page -->
-            <button type="button" onclick="window.location.href='my_caravans.php'">Cancel</button>
+            <button type="button" onclick="window.location.href='my_caravan.php'">Cancel</button>
         </form>
     </main>
 </div>

@@ -88,7 +88,7 @@ if (!$result) {
                         </form>
 
                         <!-- Summary button: sends vehicle_id via GET to caravan_summary.php -->
-                        <form action="caravan_summary.php" method="get" style="display:inline;">
+                        <form action="caravanSummary.html" method="get" style="display:inline;">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($row['vehicle_id']); ?>">
                             <button type="submit" class="summary-button">Summary</button>
                         </form>

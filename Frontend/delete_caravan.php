@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     $delete = "DELETE FROM vehicle_details WHERE vehicle_id = $vehicle_id AND user_id = $user_id";
     if (mysqli_query($conn, $delete)) {
         // Redirect to user's caravan list after successful deletion
-        header("Location: my_caravans.php");
+        header("Location: my_caravan.php");
         exit;
     } else {
         // Output error if deletion fails
@@ -89,7 +89,7 @@ $caravan = mysqli_fetch_assoc($result); // Fetch caravan data
                 <!-- Delete button triggers form submission -->
                 <button type="submit" name="confirm_delete" class="delete-button">Delete</button>
                 <!-- Cancel button redirects back to My Caravans page -->
-                <button type="button" onclick="window.location.href='my_caravans.php'" class="cancel-button">Cancel</button>
+                <button type="button" onclick="window.location.href='my_caravan.php'" class="cancel-button">Cancel</button>
             </div>
         </form>
     </main>
@@ -110,17 +110,11 @@ $caravan = mysqli_fetch_assoc($result); // Fetch caravan data
         });
     });
 
-    // The following line tries to attach event listener to an element with id "cancelDeleteBtn"
-    // but this element does not exist, so it will cause an error if executed.
-    // Consider removing or correcting this line if needed.
+    
     document.getElementById("cancelDeleteBtn").addEventListener("click", function () {
-        window.location.href = "my_caravans.php";
+        window.location.href = "my_caravan.php";
     });
 
-    // You might want to add a confirmDelete() function to confirm before deleting
-    function confirmDelete() {
-        return confirm('Are you sure you want to delete this caravan?');
-    }
 </script>
 
 </body>

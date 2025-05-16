@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         WHERE vehicle_id = $vehicle_id AND user_id = $user_id";
 
     if (mysqli_query($conn, $update)) {
-        header("Location: my_caravans.php");
+        header("Location: my_caravan.php");
         exit;
     } else {
         echo "Error updating caravan: " . mysqli_error($conn);
